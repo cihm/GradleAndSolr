@@ -8,7 +8,7 @@ public class SolrHandler {
     static Log logger = LogFactory.getLog(SolrHandler.class);
  
     public static void main(String[] args) {
-		String[] arg = {"search:王道:Ylib"};
+		String[] arg = {"search:art:Ylib"};
 		//String[] arg = {"build"};
 		//String[] arg ={"h"};
 		(new SolrFlowHandler()).main(arg);

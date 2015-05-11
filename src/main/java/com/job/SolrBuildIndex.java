@@ -60,6 +60,25 @@ public class SolrBuildIndex {
 
 		 }
 
+		Iterator ylibIter = ylibMap.entrySet().iterator();
+		while (ylibIter.hasNext()) {
+			Map.Entry entry = (Map.Entry) ylibIter.next();
+			ArrayList<HashMap<String, Object>> bookAL = (ArrayList<HashMap<String, Object>>) entry
+					.getValue();
+
+			for (HashMap hm : bookAL) {
+				k++;
+
+				SolrInputDocument doc = new SolrInputDocument();
+				doc.addField("id", k);
+				doc.addField("channel", "Ylib");
+				doc.addField("name", hm.get("name"));
+				doc.addField("description", hm.get("description"));
+				System.out.println(doc.toString());
+				docs2.add(doc);
+			}
+		}
+		     
 	     Iterator zinioIter = zinioMap.entrySet().iterator();
 	     
 	     
@@ -82,33 +101,14 @@ public class SolrBuildIndex {
 	    	 }
 	     }
 	     
-	     Iterator ylibIter = ylibMap.entrySet().iterator(); 
-	     while(ylibIter.hasNext()) { 
-	    	 Map.Entry entry = (Map.Entry) ylibIter.next(); 
-	    	 ArrayList<HashMap<String,Object>> bookAL=(ArrayList<HashMap<String,Object>>)entry.getValue();
-	    	 
-	    	 for(HashMap hm:bookAL){
-	    		 k++;
-	    		 
-	    		 SolrInputDocument doc = new SolrInputDocument();
-				 doc.addField("id", k);
-				 doc.addField("channel", "Ylib");
-				 doc.addField("name", hm.get("name"));
-				 doc.addField("description", hm.get("description"));
-				 
-				 docs2.add(doc);
-	    	 }
-	     }
 	     
 	     Iterator ibobarIter = ibobarMap.entrySet().iterator(); 
 	     while(ibobarIter.hasNext()) { 
 	    	 Map.Entry entry = (Map.Entry) ibobarIter.next(); 
 	    	 ArrayList<HashMap<String,Object>> bookAL=(ArrayList<HashMap<String,Object>>)entry.getValue();
-	    	 //System.out.println(entry.getKey()+" size="+bookAL.size());
 	    	 
 	    	 for(HashMap hm:bookAL){
 	    		 k++;
-	    		System.out.println(entry.getKey()+" "+hm.get("Title"));
 	    		 
 	    		 SolrInputDocument doc = new SolrInputDocument();
 				 doc.addField("id", k);
@@ -123,7 +123,7 @@ public class SolrBuildIndex {
 		 //將ArrayList轉為XML格式
 		 //String resultList=GeneralXmlPullParser.reverse(contentAL);
 	     System.out.println("=======");
-	     System.out.println(docs2.toString());
+	     //System.out.println(docs2.toString());
 	     server.add(docs2);
 		
 		 server.commit();

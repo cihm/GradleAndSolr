@@ -29,8 +29,9 @@ public class SolrSearch {
 		
 		query.setQuery( "*:*" );
 		//query.setFilterQueries("name:" + "登基", "description:" + "登基", "channel:" + "ylib");
-		String keyword = "武學";
-		query.addFilterQuery("channel:" + "Ylib");
+		String keyword = solrArgVo.getKetWord();
+		String channel = solrArgVo.getChanneCode();
+		query.addFilterQuery("channel:" + channel);
 		query.setQuery("name:"+keyword+" OR description:"+keyword); 
 		//query.setQuery("name:"+"王道  AND currency:"+"NTD");
 		
