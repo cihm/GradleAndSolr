@@ -9,6 +9,16 @@ apply plugin:'application'
 /* 執行 application plugin 用到的參數 $ */
 mainClassName = "com.handler.SolrHandler"
  
+jar {
+    baseName = 'solrGradleTest'
+    version =  '0.1.0'
+} 
+
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.3'
+} 
+ 
 /* 設定 maven repository server $ */
 repositories {
     mavenCentral()

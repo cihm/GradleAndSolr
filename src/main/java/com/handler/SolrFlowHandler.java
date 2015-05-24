@@ -2,6 +2,7 @@ package com.handler;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -42,14 +43,9 @@ public class SolrFlowHandler {
             case SolrConstants.BUILD : 
             	
 				try {
+					SolrInitMap.getInstance().initAllBookMap();
 					solrBuildIndex.solrBuildIndex();
-				} catch (MalformedURLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (SolrServerException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IOException e1) {
+				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
@@ -58,11 +54,9 @@ public class SolrFlowHandler {
             case SolrConstants.SEARCH: 
             
             	try {
-					solrSearch.solrSearch(solrArgVo);
-				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SolrServerException e) {
+            		HashMap allMap = SolrInitMap.getInstance().getAllBookMap();
+					solrSearch.solrSearch(solrArgVo,allMap);
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

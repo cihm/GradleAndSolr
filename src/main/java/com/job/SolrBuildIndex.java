@@ -14,6 +14,7 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.BinaryRequestWriter;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.common.SolrInputDocument;
+
 import com.util.DataUtil;
 import com.util.SolrConstants;
 
@@ -38,102 +39,83 @@ public class SolrBuildIndex {
 		 Map ibobarMap =(HashMap) DataUtil.DeSerialization(datFilePath + "Ibobar" + "-" + "getItemListByCategoryCode" + "-using" + ".dat");
 		 Map linkingMap =(HashMap) DataUtil.DeSerialization(datFilePath + "Linking" + "-" + "getItemListByCategoryCode" + "-using" + ".dat");
 		 
-	     Collection<SolrInputDocument> docs2 = new ArrayList<SolrInputDocument>();
-	     
-	     int k=0;
-	     Iterator linkingIter = linkingMap.entrySet().iterator();
-		 while (linkingIter.hasNext()) {
-			Map.Entry entry = (Map.Entry) linkingIter.next();
-			ArrayList<HashMap<String, Object>> bookAL = (ArrayList<HashMap<String, Object>>) entry
-					.getValue();
-			for (HashMap hm : bookAL) {
-				k++;
+		Collection<SolrInputDocument> docs2 = new ArrayList<SolrInputDocument>();
 
-				SolrInputDocument doc = new SolrInputDocument();
-				doc.addField("id", k);
-				doc.addField("channel", "Linking");
-				doc.addField("name", hm.get("name"));
-				doc.addField("description", hm.get("description"));
+		// int k = 0;
 
-				docs2.add(doc);
-			}
-
-		 }
-
+		Iterator linkingIter = linkingMap.entrySet().iterator();
+		Iterator zinioIter = zinioMap.entrySet().iterator();
 		Iterator ylibIter = ylibMap.entrySet().iterator();
-		while (ylibIter.hasNext()) {
-			Map.Entry entry = (Map.Entry) ylibIter.next();
-			ArrayList<HashMap<String, Object>> bookAL = (ArrayList<HashMap<String, Object>>) entry
-					.getValue();
+		Iterator ibobarIter = ibobarMap.entrySet().iterator();
 
-			for (HashMap hm : bookAL) {
-				k++;
+		docs2.addAll(addBook2SolerDoc("linking", docs2.size(), linkingIter));
+		docs2.addAll(addBook2SolerDoc("zinio", docs2.size(), zinioIter));
+		docs2.addAll(addBook2SolerDoc("ylib", docs2.size(), ylibIter));
+		docs2.addAll(addBook2SolerDoc("ibobar", docs2.size(), ibobarIter));
 
-				SolrInputDocument doc = new SolrInputDocument();
-				doc.addField("id", k);
-				doc.addField("channel", "Ylib");
-				doc.addField("name", hm.get("name"));
-				doc.addField("description", hm.get("description"));
-				System.out.println(doc.toString());
-				docs2.add(doc);
-			}
-		}
-		     
-	     Iterator zinioIter = zinioMap.entrySet().iterator();
-	     
-	     
-	     while(zinioIter.hasNext()) { 
-	    	 Map.Entry entry = (Map.Entry) zinioIter.next(); 
-	    	 //下述不能用ALHM 去接，否則會拋出ArrayList can't be cast to ALHM的錯誤
-	    	 ArrayList<HashMap<String,Object>> bookAL=(ArrayList<HashMap<String,Object>>)entry.getValue();
-	    	 for(HashMap hm:bookAL){
-	    		 k++;
-	    		 System.out.println(entry.getKey()+" "+hm.get("Title"));
-	    		 
-	    		 SolrInputDocument doc = new SolrInputDocument();
-				 doc.addField("id", k);
-				 doc.addField("channel", "Zinio");
-				 doc.addField("name", hm.get("name"));
-				 doc.addField("description", hm.get("description"));
-				 
-				 
-				 docs2.add(doc);
-	    	 }
-	     }
-	     
-	     
-	     Iterator ibobarIter = ibobarMap.entrySet().iterator(); 
-	     while(ibobarIter.hasNext()) { 
-	    	 Map.Entry entry = (Map.Entry) ibobarIter.next(); 
-	    	 ArrayList<HashMap<String,Object>> bookAL=(ArrayList<HashMap<String,Object>>)entry.getValue();
-	    	 
-	    	 for(HashMap hm:bookAL){
-	    		 k++;
-	    		 
-	    		 SolrInputDocument doc = new SolrInputDocument();
-				 doc.addField("id", k);
-				 doc.addField("channel", "Ibobar");
-				 doc.addField("name", hm.get("name"));
-				 doc.addField("description", hm.get("description"));
-				 
-				 docs2.add(doc);
-	    	 }
-	     }
-		 
-		 //將ArrayList轉為XML格式
-		 //String resultList=GeneralXmlPullParser.reverse(contentAL);
-	     System.out.println("=======");
-	     //System.out.println(docs2.toString());
-	     server.add(docs2);
-		
-		 server.commit();
-		 server.optimize(true, true);
-		 
-		 System.out.println("finish");
-		
+		// 將ArrayList轉為XML格式
+		// String resultList=GeneralXmlPullParser.reverse(contentAL);
+		log.info("=======");
+		log.info(docs2.toString());
+		server.add(docs2);
+
+		server.commit();
+		server.optimize(true, true);
+
+		log.info("finish");
+
 		
 		
 		return true;
+	}
+	
+	private Collection<SolrInputDocument> addBook2SolerDoc(String channel,
+			int docs2Size, Iterator bookIter) {
+
+		Collection<SolrInputDocument> docArr = new ArrayList<SolrInputDocument>();
+
+		int index = docs2Size;
+
+		while (bookIter.hasNext()) {
+			Map.Entry entry = (Map.Entry) bookIter.next();
+			ArrayList<HashMap<String, Object>> bookAL = (ArrayList<HashMap<String, Object>>) entry
+					.getValue();
+			for (HashMap hm : bookAL) {
+
+				SolrInputDocument doc = new SolrInputDocument();
+				doc.addField("id", index);
+				doc.addField("channel", channel);
+				doc.addField("name", hm.get("name"));
+				doc.addField("description",hm.get("description"));
+
+				docArr.add(doc);
+				index++;
+			}
+		}
+		return docArr;
+	}
+
+	private HashMap addBookMap2AllMap(String channel, int allMapSize,
+			Iterator bookIter) {
+
+		HashMap map = new HashMap();
+		int index = allMapSize;
+
+		while (bookIter.hasNext()) {
+			Map.Entry entry = (Map.Entry) bookIter.next();
+			String categoryCode = (String) entry.getKey();
+
+			ArrayList<HashMap<String, Object>> bookAL = (ArrayList<HashMap<String, Object>>) entry
+					.getValue();
+			for (HashMap hm : bookAL) {
+				hm.put("channel", channel);// for 小7 , he need to know which
+				hm.put("categoryCode", categoryCode);
+				map.put(index, hm);
+				index++;
+			}
+		}
+		return map;
+
 	}
 
 }
