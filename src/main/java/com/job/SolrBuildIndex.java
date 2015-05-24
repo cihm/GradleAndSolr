@@ -20,6 +20,7 @@ import com.util.SolrConstants;
 
 public class SolrBuildIndex {
 
+	
 	public static Logger log = Logger.getLogger(SolrBuildIndex.class.getName());
 
 	public boolean solrBuildIndex() throws MalformedURLException, SolrServerException,IOException{
