@@ -1,12 +1,7 @@
 package com.handler;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.HashMap;
-
 import org.apache.log4j.Logger;
-import org.apache.solr.client.solrj.SolrServerException;
-
 import com.job.SolrBuildIndex;
 import com.job.SolrSearch;
 import com.util.SolrConstants;
